@@ -11,6 +11,9 @@
       "properties": {
         "id": {
           "type": ["null", "integer"]
+        },
+        "login": {
+          "type": ["null", "integer"]
         }
       }
     },

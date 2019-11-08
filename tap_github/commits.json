@@ -77,6 +77,10 @@
             "email": {
               "type": ["null", "string"],
               "description": "The author's email"
+            },
+            "login": {
+              "type": ["null", "string"],
+              "description": "The author's username"
             }
           }
         },
@@ -100,6 +104,10 @@
             "email": {
               "type": ["null", "string"],
               "description": "The committer's email"
+            },
+            "login": {
+              "type": ["null", "string"],
+              "description": "The committer's username"
             }
           }
         },
