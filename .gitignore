@@ -89,3 +89,9 @@ ENV/
 .ropeproject
 
 *~
+
+# Test files
+catalog.json
+config.json
+properties.json
+state.json

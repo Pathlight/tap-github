@@ -24,7 +24,12 @@ KEY_PROPERTIES = {
     'stargazers': ['user_id'],
     'releases': ['id'],
     'reviews': ['id'],
-    'review_comments': ['id']
+    'review_comments': ['id'],
+    'review_requests': ['pull_request_id', 'user_id', 'team_id'],
+}
+
+SUB_STREAMS = {
+    'pull_requests': ['reviews', 'review_comments', 'review_requests']
 }
 
 class AuthException(Exception):
@@ -128,11 +133,11 @@ def validate_dependencies(selected_stream_ids):
     msg_tmpl = ("Unable to extract {0} data. "
                 "To receive {0} data, you also need to select {1}.")
 
-    if 'reviews' in selected_stream_ids and 'pull_requests' not in selected_stream_ids:
-        errs.append(msg_tmpl.format('reviews','pull_requests'))
-
-    if 'review_comments' in selected_stream_ids and 'pull_requests' not in selected_stream_ids:
-        errs.append(msg_tmpl.format('review_comments','pull_requests'))
+    for stream, sub_streams in SUB_STREAMS.items():
+        if stream not in selected_stream_ids:
+            for sub_stream in sub_streams:
+                if sub_stream in selected_stream_ids:
+                    errs.append(msg_tmpl.format(sub_stream, stream))
 
     if errs:
         raise DependencyException(" ".join(errs))
@@ -246,6 +251,19 @@ def get_all_pull_requests(schemas, repo_path, state, mdata):
                     singer.write_record('pull_requests', rec, time_extracted=extraction_time)
                     singer.write_bookmark(state, repo_path, 'pull_requests', {'since': singer.utils.strftime(extraction_time)})
                     counter.increment()
+
+                    if schemas.get('review_requests'):
+                        for reviewer_rec in pr['requested_reviewers']:
+                            singer.write_record('review_requests', {
+                                'pull_request_id': pr['id'],
+                                'user_id': reviewer_rec['id'],
+                                'user_login': reviewer_rec['login'],
+                            }, time_extracted=extraction_time)
+                        for team_rec in pr['requested_teams']:
+                            singer.write_record('review_requests', {
+                                'pull_request_id': pr['id'],
+                                'team_id': team_rec['id'],
+                            }, time_extracted=extraction_time)
 
                     # sync reviews if that schema is present (only there if selected)
                     if schemas.get('reviews'):
@@ -486,10 +504,6 @@ SYNC_FUNCTIONS = {
     'pull_requests': get_all_pull_requests,
     'releases': get_all_releases,
     'stargazers': get_all_stargazers
-}
-
-SUB_STREAMS = {
-    'pull_requests': ['reviews', 'review_comments']
 }
 
 def do_sync(config, state, catalog):
