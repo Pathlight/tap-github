@@ -3,10 +3,10 @@
   "additionalProperties": false,
   "properties": {
     "pull_request_id": {
-      "type": ["integer"]
+      "type": ["string"]
     },
     "user_id": {
-      "type": ["null", "integer"]
+      "type": ["null", "string"]
     },
     "user_login": {
       "type": ["null", "string"]
