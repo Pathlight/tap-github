@@ -258,11 +258,14 @@ def get_all_pull_requests(schemas, repo_path, state, mdata):
                                 'pull_request_id': pr['id'],
                                 'user_id': reviewer_rec['id'],
                                 'user_login': reviewer_rec['login'],
+                                'team_id': None,
                             }, time_extracted=extraction_time)
                         for team_rec in pr['requested_teams']:
                             singer.write_record('review_requests', {
                                 'pull_request_id': pr['id'],
                                 'team_id': team_rec['id'],
+                                'user_id': None,
+                                'user_login': None,
                             }, time_extracted=extraction_time)
 
                     # sync reviews if that schema is present (only there if selected)
