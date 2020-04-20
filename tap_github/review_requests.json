@@ -10,9 +10,6 @@
     },
     "user_login": {
       "type": ["null", "string"]
-    },
-    "team_id": {
-      "type": ["null", "integer"]
     }
   }
 }
