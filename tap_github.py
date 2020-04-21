@@ -255,8 +255,8 @@ def get_all_pull_requests(schemas, repo_path, state, mdata):
                     if schemas.get('review_requests'):
                         for reviewer_rec in pr['requested_reviewers']:
                             singer.write_record('review_requests', {
-                                'pull_request_id': pr['id'],
-                                'user_id': reviewer_rec['id'],
+                                'pull_request_id': str(pr['id']),
+                                'user_id': str(reviewer_rec['id']),
                                 'user_login': reviewer_rec['login'],
                             }, time_extracted=extraction_time)
 
